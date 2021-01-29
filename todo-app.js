@@ -1,53 +1,11 @@
-let todos = []
+const todos = getSavedTodos()
 
-// Starts
 const filters = {
     searchText: '',
     hideCompleted: false
 }
 
-const todosJSON = localStorage.getItem('todos')
-
-if (todosJSON !== null) {
-    todos = JSON.parse(todosJSON)
-}
-
-const renderTodos = function (todos, filters) {
-    const filteredTodos = todos.filter(function (todo) {
-        const searchTextMatch = todo.text.toLowerCase().includes(filters.searchText.toLowerCase())
-        const hideCompletedMatch = !filters.hideCompleted || !todo.completed
-
-        return searchTextMatch && hideCompletedMatch
-    })
-
-    // filteredTodos = filteredTodos.filter(function (todo) {
-    //     return !filters.hideCompleted || !todo.completed
-    //     // if (filters.hideCompleted) {
-    //     //     return !todo.completed
-    //     // } else {
-    //     //     return true
-    //     // }
-    // })
-
-    const incompleteTodos = filteredTodos.filter(function (todo) {
-        return !todo.completed
-    })
-    
-    document.querySelector('#todos').innerHTML = ''
-
-    const summary = document.createElement('h2')
-    summary.textContent = `You have ${incompleteTodos.length} todos left`
-    document.querySelector('#todos').appendChild(summary)
-    
-    filteredTodos.forEach(function (todo) {
-        const p = document.createElement('p')
-        p.textContent = todo.text
-        document.querySelector('#todos').appendChild(p)
-    })
-}
-
 renderTodos(todos, filters)
-// Ends
 
 document.querySelector('#search-text').addEventListener('input', function (e) {
     filters.searchText = e.target.value
@@ -60,8 +18,7 @@ document.querySelector('#new-todo').addEventListener('submit', function (e) {
         text: e.target.elements.text.value,
         completed: false
     })
-
-    localStorage.setItem('todos', JSON.stringify(todos))
+    saveTodos(todos)
     renderTodos(todos, filters)
     e.target.elements.text.value = ''
 })
@@ -70,8 +27,3 @@ document.querySelector('#hide-completed').addEventListener('change', function (e
     filters.hideCompleted = e.target.checked
     renderTodos(todos, filters)
 })
-
-// 1. Create a checkbox and setup event listener -> "Hide completed"
-// 2. Create new hideCompleted filter (default false)
-// 3. Update hideCompleted and rerender list on checkbox change
-// 4. Setup renderTodos to remove completed items
